@@ -45,49 +45,70 @@ int	ft_strcmp(char *s1, char *s2)
 
 long	ft_get_time(void)
 {
+	// struct timeval	time;
+
+	// gettimeofday(&time, NULL);
+	// return (time.tv_sec * 1000L + time.tv_usec / 1000);
 	struct timeval	time;
 
 	gettimeofday(&time, NULL);
-	return (time.tv_sec * 1000L + time.tv_usec / 1000);
+	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 void	ft_usleep(int ms)
 {
 	long	time;
 
+
 	time = ft_get_time() + ms;
 	while (((long)ft_get_time() < time))
-		usleep(500);
+		usleep(600);
 }
 
-void	ft_print(t_kant *kant)
-{
-	printf("%d", kant->data->count_name);
-	if (kant->data->status == 1 || kant->data->status == 2)
-		printf(" : has taken a fork\n");
-	else if (kant->data->status == 3)
-		printf(" : is eating\n");
-	else if (kant->data->status == 4)
-		printf(" : is sleeping\n");
-	else if (kant->data->status == 5)
-		printf(" : is thinking\n");
-	else if (kant->data->status == 6)
-		printf(" : is died\n");
-}
-
-void	ft_print_message(t_kant *kant)
+void	ft_print(t_dekart *dekart, int status)
 {
 	int	time;
 
-	time = ft_get_time();
-	pthread_mutex_lock(&kant->data->print);
-	if (!kant->s_dead_is_come)
+	if (!dekart->kant->s_dead_is_come || !dekart->status)
+		return ;
+	time = ft_get_time() - dekart->kant->s_time;
+	printf("%d - %d", time, dekart->count_name);
+	if (status == 1 || status == 2)
+		printf(" : has taken a fork\n");
+	else if (status == 3)
+		printf(" : is eating\n");
+	else if (status == 4)
+		printf(" : is sleeping\n");
+	else if (status == 5)
+		printf(" : is thinking\n");
+	else if (status == 6)
+		printf(" : is died\n");
+}
+
+void	ft_print_message(t_dekart *dekart, int status)
+{
+
+	pthread_mutex_lock(&dekart->print);
+	if (!dekart->kant->s_dead_is_come)
 	{
-		pthread_mutex_unlock(&kant->data->print);
+		ft_print(dekart, 6);
+		pthread_mutex_unlock(&dekart->print);
 		return ;
 	}
-	if (kant->s_eat_number && kant->s_eat_number == kant->s_count_eat)
-		printf("all philosophers eat at least %d\n", kant->s_count_eat);
+	if (dekart->kant->s_eat_number && dekart->kant->s_eat_number == dekart->kant->s_count_eat)
+		printf("all philosophers eat at least %d\n", dekart->kant->s_count_eat);
 	else
-		ft_print(kant);
-	pthread_mutex_unlock(&kant->data->print);
+		ft_print(dekart, status);
+	pthread_mutex_unlock(&dekart->print);
+}
+
+int	ft_strlen_int(int *s)
+{
+	int	i;
+
+	i = 0;
+	if (!s)
+		return(0);
+	while (s[i])
+		i++;
+	return (i);
 }
