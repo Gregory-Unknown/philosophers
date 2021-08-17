@@ -2,7 +2,7 @@ NAME		= philo
 
 INC			= philos.h
 
-SRCS		= main.c philos.c ft_utils.c
+SRCS		= main.c philos.c ft_utils.c ft_utils2.c
 
 OBJ			= $(SRCS:.c=.o)
 
